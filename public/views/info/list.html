@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/flex.css" media="all">
+    <title>Document</title>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header layuiadmin-card-header-auto">
+                <button class="layui-btn layuiadmin-btn-class" data-type="add" lay-event="select">添加分类</button>
+                <button class="layui-btn layuiadmin-btn-details" data-type="add" lay-event="select">添加详情</button>
+        </div>
+            <div class="layui-card-body">    
+                <div class="layui-form-item">
+                    <table class="layui-table mt0" lay-filter="table-index-list" id="table-index-list"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../layuiadmin/layui/layui.js"></script>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-sm" lay-event="select">删除</a>
+        <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+    </script>
+
+    <script>
+        layui.config({
+            base: '../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index','table','form','message','jquery'], function(){
+        var table = layui.table,
+            $ = layui.jquery,
+            message = layui.message;
+        table.render({
+            elem: '#table-index-list'
+            ,url: '/info/list' //数据接口
+            ,page: true
+            ,cols: [[ //表头
+                {field: 'title', title: '标题'}
+                ,{field: 'number', title: '观看人数'}
+                ,{field: 'date', title: '时间'}
+                ,{field: 'author', title: '作者'}
+                ,{field: 'interest_name', title: '分类'}
+                ,{title: '操作', toolbar:'#toolbar'}
+            ]]
+            
+        });
+        table.reload('table-index-list'); 
+        $(document).on('click','.layuiadmin-btn-details',function(){
+            layer.open({
+                type: 2,
+                title: '添加项目'
+                ,area: ['100%','100%']
+                ,content: 'details.html'
+            });  
+        })
+        $(document).on('click','.layuiadmin-btn-class',function(){
+            layer.open({
+                type: 2,
+                title: '添加项目'
+                ,area: ['100%','100%']
+                ,content: 'class.html'
+            });  
+        })
+        // layuiadmin-btn-class
+        table.on('tool(table-index-list)', function(obj){
+            var data = obj.data;
+            //编辑模块
+            if(obj.event == 'select'){
+                message.confirm('确定要删除此文章吗?',function(){
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        dataType: "json",
+                        url: '/info/del/details',
+                        contentType: "application/json",
+                        data:JSON.stringify(data),
+                        success: function(res) {
+                            if (res.code) {
+                                message.success(res.message);
+                            }else {
+                                message.error(res.message);
+                            }
+                        },
+                        error: function (res){
+                            message.error(res.message);
+                        }
+                    });
+                })
+            }else if(obj.event == 'edit'){
+                let id = obj.data._id;
+                    layer.open({
+                    type: 2,
+                    title: '添加商品详情'
+                    ,area: ['100%','100%']
+                    ,content: 'editdetails.html'
+                    ,success:function (dom) {
+                        let $iframeDom=$(dom[0]).find("iframe").eq(0).contents();
+                        $iframeDom.find(".content").html(id)
+                    }
+                });
+            }
+        })
+});
+</script>
+    </script>
+</body>
+</html>

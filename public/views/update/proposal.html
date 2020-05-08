@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/flex.css" media="all">
+    <title>Document</title>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body">    
+                <div class="layui-form-item">
+                    <table class="layui-table mt0" lay-filter="table-index-list" id="table-index-list"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../layuiadmin/layui/layui.js"></script>
+    <script type="text/html" id="toolbar">
+        {{# if(d.status =='0') { }}
+            <a class="layui-btn layui-btn-sm" lay-event="examine">审核</a>
+        {{# } }}
+        <a class="layui-btn layui-btn-sm" lay-event="delete">删除</a>
+    </script>
+    <script type="text/html" id="statusText">
+        {{# if(d.status =='0') { }}
+        未审核
+        {{# } }}
+        {{# if(d.status == '1') { }}
+        已审核
+        {{# } }}
+    </script>
+    <script>
+        layui.config({
+            base: '../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index','table','form','message','jquery'], function(){
+        var table = layui.table,
+            $ = layui.jquery,
+            message = layui.message;
+            table.render({
+                elem: '#table-index-list'
+                ,url: '/get/proposal/info' //数据接口
+                ,page: true
+                ,cols: [[ //表头
+                    ,{field: 'name', title: '姓名'},
+                    ,{field: 'phone', title: '手机号'}
+                    ,{field: 'class_name', title: '建议分类'}
+                    ,{field: 'remark', title: '备注信息'}
+                    ,{field: 'current_time', title: '提交时间'}
+                    ,{toolbar: '#statusText', title: '状态'}
+                    ,{title: '操作', toolbar:'#toolbar'}
+                ]]
+            });
+            table.reload('table-index-list'); 
+            table.on('tool(table-index-list)', function(obj){
+            var data = obj.data;
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            //编辑模块
+            if(obj.event == 'examine'){
+                message.confirm('确定要审核此建议吗?',function(){
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        dataType: "json",
+                        url: '/update/proposal/info',
+                        contentType: "application/json",
+                        data:JSON.stringify(data),
+                        success: function(res) {
+                            if (res.code) {
+                                message.success(res.message);
+                                layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
+                                parent.layer.close(index); //再执行关闭
+                            }else {
+                                message.error(res.message);
+                            }
+                        },
+                        error: function (res){
+                            message.error(res.message);
+                        }
+                    });
+                })
+            }else if(obj.event == 'delete'){
+                message.confirm('确定要删除此建议吗?',function(){
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        dataType: "json",
+                        url: '/delete/proposal/info',
+                        contentType: "application/json",
+                        data:JSON.stringify(data),
+                        success: function(res) {
+                            if (res.code) {
+                                message.success(res.message);
+                                layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
+                                parent.layer.close(index); //再执行关闭
+                            }else {
+                                message.error(res.message);
+                            }
+                        },
+                        error: function (res){
+                            message.error(res.message);
+                        }
+                    });
+                })  
+            }
+        })
+});
+</script>
+    </script>
+</body>
+</html>

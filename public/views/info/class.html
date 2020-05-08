@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/flex.css" media="all">
+    <title>Document</title>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="" lay-filter="component-form-group">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分类名称</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分类id</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="class_id" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-layout-admin">
+                        <div class="layui-input-block">
+                            <div class="layui-footer" style="left: 0;z-index:9999">
+                            <button type="button" class="layui-btn" lay-submit="" lay-filter="layui-form-submit">立即提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> 
+    <script src="../../layuiadmin/layui/layui.js"></script>
+        <script>
+            layui.config({
+                base: '../../layuiadmin/' //静态资源所在路径
+            }).extend({
+                index: 'lib/index' //主入口模块
+            }).use(['index','uploadAlone','form','message','laydate'],function(){
+                var $ = layui.$,
+                form = layui.form,
+                laydate = layui.laydate
+                message = layui.message;
+                form.on('submit(layui-form-submit)', function(data){
+                    var field = data.field; //获取提交的字段
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    // 提交 Ajax 成功后，关闭当前弹层并重载表格
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        dataType: "json",
+                        url: '/add/info/class',
+                        contentType: "application/json",
+                        data:JSON.stringify(field),
+                        success: function(res) {
+                            if (res.code) {
+                                message.success(res.message);
+                                parent.layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
+                                parent.layer.close(index); //再执行关闭    
+                            }else {
+                                message.error(res.message);
+                            }
+                        },
+                        error: function (res){
+                            message.success(res.message);
+                        }
+                    });
+                });
+            });
+        </script>
+</body>
+</html>
