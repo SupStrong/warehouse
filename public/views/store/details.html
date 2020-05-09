@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../layuiadmin/style/flex.css" media="all">
+    <title>Document</title>
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-body" style="padding: 15px;">
+                <form class="layui-form" action="" lay-filter="component-form-group">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">负责</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系方式</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="author" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label col-xs-3">图片</label>
+                        <div class="layui-input-block">
+                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image[]" flex="cross:bottom">
+                                <div class="G-img-add G-upload-file ml0">
+                                    <span class="G-img-icon">+</span>
+                                    <input type="file" class="choice-file" data-name="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">地址</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="fabulous" lay-verify="required" autocomplete="off" placeholder="请输入点赞人数" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">营业执照信息</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" name="browse" lay-verify="required" autocomplete="off" placeholder="请输入浏览人数" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">身份证信息</label>
+                        <div class="layui-input-block wid_290">
+                            <input type="text" class="layui-input" lay-verify="required" name="date" id="test-laydate-type-datetime" placeholder="yyyy-MM-dd" lay-key="7" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所在区域</label>
+                        <div class="layui-input-block" style="position: relative;z-index: 9;">
+                            <textarea id="editor" name="details" lay-verify="required" type="text/plain" style="width:1024px;height:500px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-layout-admin">
+                        <div class="layui-input-block">
+                            <div class="layui-footer" style="left: 0;z-index:9999">
+                            <button type="button" class="layui-btn" lay-submit="" lay-filter="layui-form-submit">立即提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> 
+    <script src="../../layuiadmin/layui/layui.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../ueditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="../../ueditor/lang/zh-cn/zh-cn.js"> </script>
+        <script>
+            layui.config({
+                base: '../../layuiadmin/' //静态资源所在路径
+            }).extend({
+                index: 'lib/index' //主入口模块
+            }).use(['index','uploadAlone','form','message','laydate'],function(){
+                var $ = layui.$,
+                form = layui.form,
+                laydate = layui.laydate
+                message = layui.message;
+                laydate.render({
+                    elem: '#test-laydate-type-datetime'
+                    ,type: 'date'
+                });
+                form.on('submit(layui-form-submit)', function(data){
+                    var field = data.field; //获取提交的字段
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    // 提交 Ajax 成功后，关闭当前弹层并重载表格
+                    var arrList = [];
+                    for(var i = 0; i < $("input[type='hidden']").length; i++){
+                        arrList.push($("input[type='hidden']").eq(i).val());
+                    }
+                    field.image = arrList;
+                    field.interest_name = $(".prevmain").find('option:checked').text();
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        dataType: "json",
+                        url: '/store/details',
+                        contentType: "application/json",
+                        data:JSON.stringify(field),
+                        success: function(res) {
+                            if (res.code) {
+                                message.success(res.message);
+                                parent.layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
+                                parent.layer.close(index); //再执行关闭
+                            }else {
+                                message.error(res.message);
+                            }
+                        },
+                        error: function (res){
+                            message.error(res.message);
+                        }
+                    });
+                });
+                $('#editor').each(function(e,i){
+                    var _thisId = $(this).attr('id');
+                    if(_thisId){
+                        var ue = UE.getEditor(_thisId);
+                        ue.execCommand('serverparam','_token',$('meta[name="csrf_token"]').attr('content'));
+                    }
+                });
+            });
+        </script>
+</body>
+</html>
