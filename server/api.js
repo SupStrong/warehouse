@@ -10,6 +10,7 @@ const path = require('path');
 var bodyParse = require('body-parser')
 var ueditor = require("./ueditor")
 var WXBizDataCrypt = require('./WXBizDataCrypt')
+router.use('/store',require('./store/index'));
 /************** 创建(create) 读取(get) 更新(update) 删除(delete) **************/
 router.get("/ueditor/ue", ueditor(path.join(__dirname, '../public'), function (req, res, next) {
     //客户端上传文件设置

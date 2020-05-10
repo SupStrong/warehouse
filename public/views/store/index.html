@@ -22,7 +22,10 @@
             </div>
         </div>
     </div>
+    
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="../../layuiadmin/layui/layui.js"></script>
+    <script src="../../layuiadmin/modules/admin.js"></script>
     <script type="text/html" id="toolbar">
         <a class="layui-btn layui-btn-sm" lay-event="select">删除</a>
         <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
@@ -39,90 +42,36 @@
             message = layui.message;
             table.render({
                 elem: '#table-index-list'
-                ,url: '/get/store/list' //数据接口
+                ,url: '/store/get/list' //数据接口
                 ,page: true
                 ,cols: [[ //表头
-                    ,{field: 'prev_name', title: '父分类'},
-                    ,{field: 'chide_name', title: '子分类'}
-                    ,{field: 'title', title: '标题'}
-                    ,{field: 'info', title: '介绍'}
-                    ,{field: 'present_price', title: '商品现价'}
-                    ,{field: 'original_price', title: '商品原价'}
-                    ,{field: 'discount_price', title: '优惠金额'}
-                    ,{field: 'date', title: '时间'}
+                    ,{field: 'name', title: '负责人'},
+                    ,{field: 'phone', title: '联系方式'}
+                    ,{field: 'address', title: '地址'}
+                    ,{field: 'info', title: '营业执照信息'}
+                    ,{field: 'identity', title: '商品现价'}
+                    ,{field: 'area', title: '所在区域'}
                     ,{title: '操作', toolbar:'#toolbar'}
                 ]]
                 
             });
             table.reload('table-index-list'); 
         $(document).on('click','.layuiadmin-btn-prev',function(){
-            layer.open({
-                type: 2,
-                title: '添加项父级分类'
-                ,area: ['100%','100%']
-                ,content: 'details.html'
-            });  
+            admin.popupContent(2,'创建商家','details.html') 
         })
-        $(document).on('click','.layuiadmin-btn-clide',function(){
-            layer.open({
-                type: 2,
-                title: '添加子集分类'
-                ,area: ['100%','100%']
-                ,content: 'prevCli.html'
-            });  
-        });
-        $(document).on('click','.layuiadmin-btn-details',function(){
-            layer.open({
-                type: 2,
-                title: '添加商品详情'
-                ,area: ['100%','100%']
-                ,content: 'details.html'
-            });  
-        });
         table.on('tool(table-index-list)', function(obj){
             var data = obj.data;
-            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
             //编辑模块
             if(obj.event == 'select'){
-                message.confirm('确定要删除此文章吗?',function(){
-                    $.ajax({
-                        type: "POST",
-                        async: false,
-                        dataType: "json",
-                        url: '/coupon/del/details',
-                        contentType: "application/json",
-                        data:JSON.stringify(data),
-                        success: function(res) {
-                            if (res.code) {
-                                message.success(res.message);
-                                layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
-                                parent.layer.close(index); //再执行关闭
-                            }else {
-                                message.error(res.message);
-                            }
-                        },
-                        error: function (res){
-                            message.error(res.message);
-                        }
-                    });
-                })
+                admin.confirmPopup('确定要删除此超市信息吗','/store/del/list?id='+ data._id,'','',)
             }else if(obj.event == 'edit'){
-                let id = obj.data._id;
-                    layer.open({
-                    type: 2,
-                    title: '添加商品详情'
-                    ,area: ['100%','100%']
-                    ,content: 'editdetails.html'
-                    ,success:function (dom) {
-                        let $iframeDom=$(dom[0]).find("iframe").eq(0).contents();
-                        $iframeDom.find(".content").html(id)
-                    }
-                });  
+                admin.popupContent(2,'创建商家','details.html',yesCallback = function(index,layera){
+                    // admin.formVal(ele,data);
+                }) 
             }
         })
 
 });
-</script>
     </script>
 </body>
 </html>

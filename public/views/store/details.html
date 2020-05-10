@@ -15,19 +15,19 @@
             <div class="layui-card-body" style="padding: 15px;">
                 <form class="layui-form" action="" lay-filter="component-form-group">
                     <div class="layui-form-item">
-                        <label class="layui-form-label">负责</label>
+                        <label class="layui-form-label">负责人</label>
                         <div class="layui-input-block wid_290">
-                            <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入负责人" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">联系方式</label>
                         <div class="layui-input-block wid_290">
-                            <input type="text" name="author" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                            <input type="number" name="phone" lay-verify="required" autocomplete="off" maxlength="11" placeholder="请输入联系方式" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label col-xs-3">图片</label>
+                        <label class="layui-form-label col-xs-3">请输入商家图片</label>
                         <div class="layui-input-block">
                             <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image[]" flex="cross:bottom">
                                 <div class="G-img-add G-upload-file ml0">
@@ -40,27 +40,39 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">地址</label>
                         <div class="layui-input-block wid_290">
-                            <input type="text" name="fabulous" lay-verify="required" autocomplete="off" placeholder="请输入点赞人数" class="layui-input">
+                            <input type="text" name="address" lay-verify="required" autocomplete="off" placeholder="请输入商家地址" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">营业执照信息</label>
-                        <div class="layui-input-block wid_290">
-                            <input type="text" name="browse" lay-verify="required" autocomplete="off" placeholder="请输入浏览人数" class="layui-input">
+                        <label class="layui-form-label col-xs-3">请上传营业执照图片</label>
+                        <div class="layui-input-block">
+                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image[]" flex="cross:bottom">
+                                <div class="G-img-add G-upload-file ml0">
+                                    <span class="G-img-icon">+</span>
+                                    <input type="file" class="choice-file" data-name="">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">身份证信息</label>
                         <div class="layui-input-block wid_290">
-                            <input type="text" class="layui-input" lay-verify="required" name="date" id="test-laydate-type-datetime" placeholder="yyyy-MM-dd" lay-key="7" readonly>
+                            <input type="text" name="address" lay-verify="required" autocomplete="off" placeholder="请输入身份证信息" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">所在区域</label>
-                        <div class="layui-input-block" style="position: relative;z-index: 9;">
-                            <textarea id="editor" name="details" lay-verify="required" type="text/plain" style="width:1024px;height:500px;"></textarea>
-                        </div>
+                        <select name="" id="">
+                            <option value="请选择所在区域"></option>
+                        </select>
                     </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商家状态</label>
+                        <div class="layui-input-block">
+                          <input type="radio" name="news" value="0" title="开启" checked>
+                          <input type="radio" name="news" value="1" title="关闭">
+                        </div>
+                      </div>
                     <div class="layui-form-item layui-layout-admin">
                         <div class="layui-input-block">
                             <div class="layui-footer" style="left: 0;z-index:9999">
@@ -100,6 +112,8 @@
                     }
                     field.image = arrList;
                     field.interest_name = $(".prevmain").find('option:checked').text();
+                    console.log(field,"filed");
+                    
                     $.ajax({
                         type: "POST",
                         async: false,
