@@ -71,29 +71,6 @@ router.post("/ueditor/ue", ueditor(path.join(__dirname, '../public'), function (
 router.get('/',function(req,res){
     res.sendfile(path.resolve('../public/views/index.html'));
 });
-// 创建商家详情
-router.post('/store/details', (req, res) => {
-    let newstoreList = new db.storeList(req.body);
-    newstoreList.save(function (err) {
-        if (err) {
-            res.send(err);
-        } else {
-            res.send({ 'code': 1, 'message': '保存成功' });
-        }
-    })
-})
-// 获取所有商家列表
-router.get('/get/store/list', (req, res) => {
-    db.storeList.find({}, (err, data) => {
-        
-        if (err) {
-            res.send(err);
-            return
-        }else{
-            res.send({ 'code': 1, data:data, 'message': '收藏成功' })
-        }
-    })
-})
 router.get('/login',function(req,res){
     if(req.query.username == '13693068423' && req.query.password == '123456'){
         res.send({ code: 1, message: '登录成功' });

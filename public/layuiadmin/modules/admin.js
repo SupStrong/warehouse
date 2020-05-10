@@ -112,7 +112,7 @@
      * btnCallback() 用户点击取消产生的逻辑
      * )
     */
-    Admin.prototype.popupContent = function(type,title,content,width,height,
+    Admin.prototype.popupContent = function(type,title,content,data,width,height,
       successCallback = function(index,layera) {},
       yesCallback = function(index,layera) {},
       btnCallback = function(index) {}){
@@ -121,10 +121,13 @@
         title:title
         ,content:content
         ,area:[width? width + '%' : '100%',height ? height + '%' : '100%']
-        ,success: function(index,layero){
-            successCallback(index,layero)
-        },yes :function(index,layero){
-            yesCallback(index,layero)
+        ,success: function(layero,index){
+          if(data.id != undefined){
+            layero.find('iframe').contents().find('.content').val(data.id);
+          }
+            successCallback(layero,index)
+        },yes :function(layero,index){
+            yesCallback(layero,index)
         },btn2:function(index){
             btnCallback(index)
           }
@@ -191,8 +194,52 @@
           }
       });
     }
-    Admin.prototype.formVal = function(ele,data){
-        form.val(ele, data);
+    // 编辑时渲染
+    Admin.prototype.formVal = function(ele,url){
+        $.ajax({
+          type: "POST",
+          async: false,
+          dataType: "json",
+          url: url,
+          contentType: "application/json",
+          data:JSON.stringify({id : $(".content").text()}),
+          success: function(res) {
+              if (res.code) {
+                layui.form.val(ele, res.data[0]);
+              }else {
+                  message.error(res.message);
+              }
+          },
+          error: function (res){
+              message.error(res.message);
+          }
+      });
+    }
+    // 表单提交
+    Admin.prototype.formSubmit = function(url,field){
+      $.ajax({
+          type: "POST",
+          async: false,
+          dataType: "json",
+          url: url,
+          contentType: "application/json",
+          data:JSON.stringify(field),
+          success: function(res) {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+              if (res.code) {
+                  layer.msg(res.message,{icon:1});
+                  setTimeout(function(){
+                    parent.layui.table.reload('table-index-list'); //重载表格  table-index-list：表格名称
+                    parent.layer.close(index); //再执行关闭
+                  },1000)
+              }else {
+                  message.error(res.message);
+              }
+          },
+          error: function (res){
+              message.error(res.message);
+          }
+      });
     }
     window.admin = new Admin();
   }(window);

@@ -57,7 +57,7 @@
             });
             table.reload('table-index-list'); 
         $(document).on('click','.layuiadmin-btn-prev',function(){
-            admin.popupContent(2,'创建商家','details.html') 
+            admin.popupContent(2,'创建商家','details.html',{}) 
         })
         table.on('tool(table-index-list)', function(obj){
             var data = obj.data;
@@ -65,9 +65,7 @@
             if(obj.event == 'select'){
                 admin.confirmPopup('确定要删除此超市信息吗','/store/del/list?id='+ data._id,'','',)
             }else if(obj.event == 'edit'){
-                admin.popupContent(2,'创建商家','details.html',yesCallback = function(index,layera){
-                    // admin.formVal(ele,data);
-                }) 
+                admin.popupContent(2,'创建商家','details.html',{id:data._id});
             }
         })
 
