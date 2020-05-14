@@ -41,27 +41,39 @@ layui.define(["layer","jquery","message"],function(exports){
                     $('.img-num').show();
                     var img = new Image;
                     img.src = this.result;
-                    img.onload = function() {
-                        let inputName = faEl.attr('data-name')
-                        var imgEl = `
-                                <div class="G-img-item" > 
-                                    <img src=${img.src}> 
-                                    <div class="G-img-delete cur_pointer"  flex="cross:center main:center" style="display:none">
-                                        <span class="delete">删除<span/>
-                                    </div>
-                                    <input type="hidden" name="${inputName}"  value="${img.src}" />
-                                </div>
-                            `;
-                        //判断是否限制大小
-                        if (limitType && (img.width != limitWidth || img.height != limitHight)) { //限制大小
-                            alert("请上传" + limitWidth + "*" + limitHight + "像素的图片")
-                            return false;
-                        } else { //不限制大小
-                            faEl.find(".G-img-add").before(imgEl);
-                            fileEl.replaceWith(fileEl.val("").clone(true))
-                            faEl.parents('.photo').addClass('active')
+                    console.log(img.src);
+                    
+                    $.ajax({
+                        url:"/upload/images",
+                        type:"post",
+                        data: {file:this.result},
+                        ataType: "json",
+                        success: function(data){
+                            if(data.code == 1){
+                                console.log(data,"data");
+                                
+                                // let inputName = faEl.attr('data-name')
+                                // var imgEl = `
+                                //         <div class="G-img-item" > 
+                                //             <img src=${img.src}> 
+                                //             <div class="G-img-delete cur_pointer"  flex="cross:center main:center" style="display:none">
+                                //                 <span class="delete">删除<span/>
+                                //             </div>
+                                //             <input type="hidden" name="${inputName}"  value="${img.src}" />
+                                //         </div>
+                                //     `;
+                                // //判断是否限制大小
+                                // if (limitType && (img.width != limitWidth || img.height != limitHight)) { //限制大小
+                                //     alert("请上传" + limitWidth + "*" + limitHight + "像素的图片")
+                                //     return false;
+                                // } else { //不限制大小
+                                //     faEl.find(".G-img-add").before(imgEl);
+                                //     fileEl.replaceWith(fileEl.val("").clone(true))
+                                //     faEl.parents('.photo').addClass('active')
+                                // }
+                            }
                         }
-                    }
+                    });
                 }
             }
         }

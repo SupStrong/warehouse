@@ -5,6 +5,7 @@ const router = express.Router();
 var request = require('request');
 var app = express();
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 var sd = require('silly-datetime');
 const path = require('path');
 var bodyParse = require('body-parser')
@@ -67,6 +68,20 @@ router.post("/ueditor/ue", ueditor(path.join(__dirname, '../public'), function (
         res.redirect('/ueditor/nodejs/config.json');
     }
 }));
+router.post('/upload/images', function (req, res) {
+    console.log(req.body.file);
+    var base64Data = req.body.file.replace(/^data:image\/\w+;base64,/, '')
+    var dataBuffer = new Buffer(base64Data, 'base64')
+    fs.writeFile(path.join(__dirname, '../public/images/') +new Date().getTime() + '.png',dataBuffer,function(err){
+        if(err){
+            res.send(err);
+        }else{
+            res.send("保存成功！");
+        }
+    });
+    // console.log(,req.body.file);
+    // console.log("Request for " + req.query + " received.");
+})
 // 首页
 router.get('/',function(req,res){
     res.sendfile(path.resolve('../public/views/index.html'));
