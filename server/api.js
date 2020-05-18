@@ -12,6 +12,7 @@ var bodyParse = require('body-parser')
 var ueditor = require("./ueditor")
 var WXBizDataCrypt = require('./WXBizDataCrypt')
 router.use('/store',require('./store/index'));
+
 /************** 创建(create) 读取(get) 更新(update) 删除(delete) **************/
 router.get("/ueditor/ue", ueditor(path.join(__dirname, '../public'), function (req, res, next) {
     //客户端上传文件设置
@@ -69,18 +70,16 @@ router.post("/ueditor/ue", ueditor(path.join(__dirname, '../public'), function (
     }
 }));
 router.post('/upload/images', function (req, res) {
-    console.log(req.body.file);
     var base64Data = req.body.file.replace(/^data:image\/\w+;base64,/, '')
-    var dataBuffer = new Buffer(base64Data, 'base64')
-    fs.writeFile(path.join(__dirname, '../public/images/') +new Date().getTime() + '.png',dataBuffer,function(err){
+    var dataBuffer = Buffer.from(base64Data, 'base64')
+    let imgPath = new Date().getTime();
+    fs.writeFile(path.join(__dirname, '../public/images/') + imgPath + '.png',dataBuffer,function(err){
         if(err){
             res.send(err);
         }else{
-            res.send("保存成功！");
+            res.send({code: 1,path:`/images/${imgPath}.png`});
         }
     });
-    // console.log(,req.body.file);
-    // console.log("Request for " + req.query + " received.");
 })
 // 首页
 router.get('/',function(req,res){

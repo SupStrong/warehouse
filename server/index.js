@@ -7,6 +7,8 @@ const api = require('./api');
 const app = express();
 app.use(express.static(path.join(__dirname, '../public')));
 const session=require('express-session');
+app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.urlencoded({limit:'50mb',extended:true}));
 app.all('*', function(req, res, next) {
     //设为指定的域
     res.header('Access-Control-Allow-Origin', "*");
