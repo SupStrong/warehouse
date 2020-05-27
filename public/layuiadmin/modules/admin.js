@@ -195,7 +195,7 @@
       });
     }
     // 编辑时渲染
-    Admin.prototype.formVal = function(ele,url){
+    Admin.prototype.formVal = function(ele,url,callback = function(data){}){
         $.ajax({
           type: "POST",
           async: false,
@@ -206,6 +206,7 @@
           success: function(res) {
               if (res.code) {
                 layui.form.val(ele, res.data[0]);
+                callback(res.data[0]);
               }else {
                   message.error(res.message);
               }
@@ -240,6 +241,29 @@
               message.error(res.message);
           }
       });
+    }
+    // 编辑时获取图片
+    Admin.prototype.UrlImg = function(data,before,cla){
+      let str = '';
+        for(var i = 0; i < data.length; i++){
+           str += `
+            <div class="G-img-item" > 
+                <img src=${data[i]}> 
+                <div class="G-img-delete cur_pointer"  flex="cross:center main:center" style="display:none">
+                    <span class="delete">删除<span/>
+                </div>
+                <input type="hidden" class="${cla}"  value="${data[i]}" />
+            </div>`;
+        }
+        before.before(str);
+    }
+    // 保存图片
+    Admin.prototype.postUrlImg = function(content){
+      let arrayData = [];
+        for(var i = 0; i < content.length; i++){
+          arrayData.push(content.eq(i).val());
+        }
+        return arrayData;
     }
     window.admin = new Admin();
   }(window);

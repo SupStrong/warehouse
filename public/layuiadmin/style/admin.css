@@ -608,6 +608,9 @@ html{background-color: #f2f2f2; color: #666;}
   font-size: 14px;
   color: white;
 }
-
+#editor{
+  position: relative;
+  z-index: 0;
+}
 
 

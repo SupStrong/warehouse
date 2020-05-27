@@ -29,7 +29,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label col-xs-3">请输入商家图片</label>
                         <div class="layui-input-block">
-                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image[]" flex="cross:bottom">
+                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image" flex="cross:bottom">
                                 <div class="G-img-add G-upload-file ml0">
                                     <span class="G-img-icon">+</span>
                                     <input type="file" class="choice-file" data-name="">
@@ -46,7 +46,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label col-xs-3">请上传营业执照图片</label>
                         <div class="layui-input-block">
-                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="image[]" flex="cross:bottom">
+                            <div class="G-upload-con" data-limitnum="5" data-limitsize="5" data-name="license" flex="cross:bottom">
                                 <div class="G-img-add G-upload-file ml0">
                                     <span class="G-img-icon">+</span>
                                     <input type="file" class="choice-file" data-name="">
@@ -57,23 +57,23 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">身份证信息</label>
                         <div class="layui-input-block wid_290">
-                            <input type="text" name="address" lay-verify="required" autocomplete="off" placeholder="请输入身份证信息" class="layui-input">
+                            <input type="text" name="identity" lay-verify="required" autocomplete="off" placeholder="请输入身份证信息" class="layui-input">
                         </div>
                     </div>
                     <!-- editor -->
                     <div class="layui-form-item">
                         <label class="layui-form-label">编辑器</label>
                         <div class="layui-input-block">
-                            <textarea name="" id="editor" cols="110" rows="100" style="height: 300px;"></textarea>
+                            <textarea name="editor" id="editor" cols="110" rows="100" style="height: 300px;"></textarea>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">所在区域</label>
                         <div class="layui-input-block wid_290">
                             <select name="area" lay-verify="required">
-                                <option value=""></option>
                                 <option value="1">北京</option>
-                                <option value="0">上海</option>
+                                <option value="2">上海</option>
+
                               </select>
                         </div>
                     </div>
@@ -108,29 +108,25 @@
             }).extend({
                 index: 'lib/index' //主入口模块
             }).use(['index','uploadAlone','form','message','laydate'],function(){
-                var $ = layui.$,
-                form = layui.form,
-                laydate = layui.laydate
-                message = layui.message;
-                laydate.render({
-                    elem: '#test-laydate-type-datetime'
-                    ,type: 'date'
-                });
+                var $ = layui.$
+                ,form = layui.form
+                ,laydate = layui.laydat
+                ,message = layui.message;
+                admin.dateTime('#test-laydate-type-datetime','date');
                 let content = $(".content").val();
-                console.log(content == '',typeof content);
-                
                 if($(".content").val() != ''){
-                    admin.formVal('component-form-group','/store/get/details?id='+content);
+                    admin.formVal('component-form-group','/store/get/details?id='+content,
+                    callback = function(data){
+                        admin.UrlImg(data.image,$(".G-img-add").eq(0),'image');
+                        admin.UrlImg(data.licenseImg,$(".G-img-add").eq(1),'license');
+                    });
                 }
                 form.on('submit(layui-form-submit)', function(data){
                     var field = data.field; //获取提交的字段
                     // 提交 Ajax 成功后，关闭当前弹层并重载表格
-                    var arrList = [];
-                    for(var i = 0; i < $("input[type='hidden']").length; i++){
-                        arrList.push($("input[type='hidden']").eq(i).val());
-                    }
-                    field.image = arrList;
-                    var url = ''
+                    field.image = admin.postUrlImg($("input[class='image']"));
+                    field.licenseImg = admin.postUrlImg($("input[class='license']"));
+                    let url = ''
                     $('.content').val() == '' ? url = '/store/create/details' : url = '/store/update/details?id=' +$(".content").val()
                     admin.formSubmit(url,field);
                     
