@@ -26,7 +26,7 @@
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.5",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "popper.js": "^1.12",
     "body-parser": "^1.18.2",
     "postcss-css-variables": "^0.13.0",
